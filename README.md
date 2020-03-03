@@ -16,7 +16,9 @@ Read \catikin_workspace\beginner_tutorials\scripts\darkflow-master\bin\readMe.tx
 Step 1
 - start roscore, open a terminal$ roscore
 Step 2 
-- start realsense camera, in new terminal$ roslaunch realsense2_camera rs_camera.launch
+- start realsense camera1, in new terminal$ roslaunch realsense2_camera rs_camera.launch camera:=cam_1 serial_no:=817412071115
+Ny terminal:
+- start realsense camera2, in new terminal$ roslaunch realsense2_camera rs_camera.launch camera:=cam_2 serial_no:=938422076468
 step 3
 - start yolo, in new terminal$ conda activate yolo $ roscd beginner_tutorials/scripts/darkflow-master/ $ rosrun beginner_tutorial yoloPub2_7.py
 
@@ -24,8 +26,10 @@ step 4
 - for wheel odmerty, $ cd _apllo/apollo $ bash dev_start.sh $ bash dev_into.sh $ bash start_wheelodometry.sh, in new termianl $ rosrun beginner_tutorials read_position.py
 
 step 5
-- start depth camera, in new terminal $ rosrun beginner_tutorials depthOutput.py
-- start map/planning, in new terminal $ rosrun beginner_tutorials pp.py
+- start depth camera, in new terminal $ rosrun beginner_tutorials depthOutputSam.py
+Ny termnial:
+$ rosrun beginner_tutorials depthOutputErik.py       
+- start map/planning, in new terminal $ rosrun beginner_tutorials ppNoa.py
 - start aim, in new terminal $ rosrun beginner_tutorials aim_goal_fixed.py
 step 6
 - start canbus, warning will make the car drive, in new termianl $ rosrun beginner_tutorials control_node
