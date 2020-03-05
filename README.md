@@ -18,21 +18,25 @@ Step 1
   
 Step 2 
   - start realsense camera1, in new terminal$ roslaunch realsense2_camera rs_camera.launch camera:=cam_1 serial_no:=817412071115
+  
 Ny terminal:
+
   - start realsense camera2, in new terminal$ roslaunch realsense2_camera rs_camera.launch camera:=cam_2 serial_no:=938422076468
   
 step 3
-
-  - start yolo, in new terminal$ conda activate yolo $ roscd beginner_tutorials/scripts/darkflow-master/ $ rosrun beginner_tutorial yoloPub2_7.py
-
-step 4
-- for wheel odmerty, $ cd _apllo/apollo $ bash dev_start.sh $ bash dev_into.sh $ bash start_wheelodometry.sh, in new termianl $ rosrun beginner_tutorials read_position.py
+  - start yolo, in new terminal$ conda activate yolo $ roscd beginner_tutorials/scripts/darkflow-master/ $ rosrun beginner_tutorial yoloPub2_7a.py
+  
+  step 4
+  - start yolo, in new terminal$ conda activate yolo $ roscd beginner_tutorials/scripts/darkflow-master/ $ rosrun beginner_tutorial yoloPub2_7b.py
 
 step 5
+- for wheel odmerty, $ cd _apllo/apollo $ bash dev_start.sh $ bash dev_into.sh $ bash start_wheelodometry.sh, in new termianl $ rosrun beginner_tutorials read_position.py
+
+step 6
   - start depth camera, in new terminal $ rosrun beginner_tutorials depthOutputSam.py
 Ny termnial:
 $ rosrun beginner_tutorials depthOutputErik.py       
   - start map/planning, in new terminal $ rosrun beginner_tutorials ppNoa.py
   - start aim, in new terminal $ rosrun beginner_tutorials aim_goal_fixed.py
-step 6
+step 7
   - start canbus, warning will make the car drive, in new termianl $ rosrun beginner_tutorials control_node
