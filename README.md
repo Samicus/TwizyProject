@@ -31,10 +31,9 @@ Ny terminal:
 
 $ conda activate yolo 
 
-
 $ roscd beginner_tutorials/scripts/darkflow-master/ 
 
-$ rosrun beginner_tutorial yoloPub2_7a.py 
+$ rosrun beginner_tutorial yoloFront.py 
   
 ### Step 3.2
 
@@ -44,7 +43,7 @@ $ rosrun beginner_tutorial yoloPub2_7a.py
   
   $ roscd beginner_tutorials/scripts/darkflow-master/ 
   
-  $ rosrun beginner_tutorial yoloPub2_7b.py
+  $ rosrun beginner_tutorial yoloSide.py
 
 ### Step 4
 - For wheel odmerty: 
@@ -64,13 +63,13 @@ $ rosrun beginner_tutorials read_position.py
 ### Step 5
   - Start depth camera, in new terminal: 
   
-  $ rosrun beginner_tutorials depthOutputSam.py
+  $ rosrun beginner_tutorials depthOutputFront.py
 Ny termnial:
 
-$ rosrun beginner_tutorials depthOutputErik.py       
+$ rosrun beginner_tutorials depthOutputSide.py       
   - Start map/planning, in new terminal:
   
-  $ rosrun beginner_tutorials ppNoa.py
+  $ rosrun beginner_tutorials pp.py
   - Start aim, in new terminal: 
   
   $ rosrun beginner_tutorials aim_goal_fixed.py
