@@ -74,6 +74,11 @@ $ rosrun beginner_tutorials depthOutputSide.py
   
   $ rosrun beginner_tutorials aim_goal_fixed.py
 
+### Step 6
+Start canbus (warning will make the car drive) in new termianl:
+
+$ rosrun beginner_tutorials control_node
+
 # Original
 Step 1
   - start roscore, open a terminal$ roscore
