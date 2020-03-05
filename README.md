@@ -1,5 +1,5 @@
 # TwizyProject
-Github repository for bachelor thesis
+#### Github repository for bachelor thesis
 
 Starting the car requiers the correct codes on both micro controller in in the front of the car,
 contact the group members from 2018 for more info. There are some elctrical problems in the car 
@@ -12,12 +12,12 @@ throttle in unwanted situations.
 Read \catikin_workspace\beginner_tutorials\scripts\darkflow-master\bin\readMe.txt for instructions on how to get the required files for YOLO.
 
 # Testversion to enable using two cameras at the same time
-Step 1
+### Step 1
   - Start roscore, open a terminal:
   
   $ roscore
 
-Step 2 
+### Step 2 
   - Start realsense camera1, in new terminal:
   
   $ roslaunch realsense2_camera rs_camera.launch camera:=cam_1 serial_no:=817412071115
@@ -26,7 +26,7 @@ Ny terminal:
   
   $ roslaunch realsense2_camera rs_camera.launch camera:=cam_2 serial_no:=938422076468
 
-Step 3.1
+### Step 3.1
   - Start yolo, in new terminal:
 
 $ conda activate yolo 
@@ -36,7 +36,7 @@ $ roscd beginner_tutorials/scripts/darkflow-master/
 
 $ rosrun beginner_tutorial yoloPub2_7a.py 
   
-Step 3.2
+### Step 3.2
 
   - Start yolo, in new terminal:
   
@@ -46,7 +46,7 @@ Step 3.2
   
   $ rosrun beginner_tutorial yoloPub2_7b.py
 
-Step 4
+### Step 4
 - For wheel odmerty: 
 
 $ cd _apllo/apollo 
@@ -61,7 +61,7 @@ In new terminal:
 
 $ rosrun beginner_tutorials read_position.py
 
-Step 5
+### Step 5
   - Start depth camera, in new terminal: 
   
   $ rosrun beginner_tutorials depthOutputSam.py
