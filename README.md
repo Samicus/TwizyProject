@@ -33,7 +33,7 @@ $ conda activate yolo
 
 $ roscd beginner_tutorials/scripts/darkflow-master/ 
 
-$ rosrun beginner_tutorial yoloFront.py 
+$ rosrun beginner_tutorials yoloFront.py 
   
 ### Step 3.2
 
@@ -43,12 +43,12 @@ $ rosrun beginner_tutorial yoloFront.py
   
   $ roscd beginner_tutorials/scripts/darkflow-master/ 
   
-  $ rosrun beginner_tutorial yoloSide.py
+  $ rosrun beginner_tutorials yoloSide.py
 
 ### Step 4
-- For wheel odmerty: 
+- For wheel odometry: 
 
-$ cd _apllo/apollo 
+$ cd _apollo/apollo 
 
 $ bash dev_start.sh 
 
