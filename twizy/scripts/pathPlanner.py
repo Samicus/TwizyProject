@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from math import pow
+import sympy as sym
+
 
 class Coordinate:
     def __init__(self,x,y):
@@ -62,30 +64,63 @@ def makeMap():      ## for now it will return a fixed map
     }
     return parkmap
 
+def deriv(f,x):
 
-def f(a, b, t):
-    return a*np.arctan(t/b)
+    h = 0.000000001                 #step-size
+    return (f(x+h) - f(x))/h        #definition of derivative
+
+
+def tangent_line(f, x_0, a, b):
+    x = np.linspace(a, b, 200)
+    y = f(x)
+    y_0 = f(x_0)
+    y_tan = deriv(f, x_0) * (x - x_0) + y_0
+
+    # plotting
+    plt.plot(x, y, 'r-')
+    plt.plot(x, y_tan, 'b-')
+    plt.axis([a, b, a, b])
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Plot of a function with tangent line')
+    plt.show()
+
+def ff(a, b, c, t):
+    return a*np.arctan(c) + a*np.arctan(t/b - c)
+
+
 
 def tanfunc(current,goal):
     """first argument takes in the current coordinate of the car and the second is the
      coordinate of the goal position this method will return the optimal
      trajectory"""
-    CarLength = 2.737
+    CarLength = 3
     Depth =  2       #np.abs(goal.getY - current.getY)
     Length = 10     #np.abs(goal.getX - current.getX)
-    Period = 2      # changes the slope of the curve, temporary**
-    Deptharray = np.linspace(0,Depth,10)
-    Periodarray =np.linspace(0, Period,10)
-    Lengtharray = np.linspace(-10,Length,10)
+    Period = 5      # changes the slope of the curve, temporary**
+    Deptharray = np.linspace(0,Depth,20)
+    Periodarray =np.linspace(0, Period,20)
+    Lengtharray = np.linspace(0,Length,20)
+    Phasearray = np.linspace(1,3,10)
 
     for a in Deptharray:           #????
         for b in Periodarray:        #????
-            if a != 0 and b!= 0:
-                function = f(a, b, Lengtharray)
-                # p1 = a - CarLength*np.cos((a*b)/(pow(b, 2)))  #calculate how long in x direction the car reaches
-                 #tangArray = (p1,a,20)                         #linspace that envelopes the whole car
-                 #tangent = (a*b)/(pow(b, 2)*tangArray+1)       #creating a tangent line
-                plt.plot(Lengtharray, f(a, b, Lengtharray))
+            for c in Phasearray:
+                if a != 0 and b!= 0:
+                    p1 = a - CarLength*np.cos((a*b)/(pow(b, 2)))  # Need to add x
+                    #linspace that envelopes the whole car
+                    #creating a tangent line
+                    function = ff(a, b, c, Lengtharray)
+
+
+
+                    #Radius = np.power(func_d)+1
+                    #Radius= np.power(1+np.power(func_d,2), 3/2)/(np.absolute(func_d2))     # formula for radius of curvature
+                    #if Radius.any() > 0.6981 or Radius.any() < -0.6981:
+                    #   print(Radius)
+
+                    #   break
+                    plt.plot(Lengtharray, function)
 
 
 
@@ -93,10 +128,13 @@ def tanfunc(current,goal):
 current = Coordinate(0,0)
 goal = Coordinate(4,2)
 
+a=2.1
+b=1.4
+c=1
+CarLength=3
 
-t = np.arange(-5, 5.0, 0.1)
 #plt.plot(t, f(t), '--b')
-#plt.plot(list(makeMap().keys()),list(makeMap().values()))
+plt.plot(list(makeMap().keys()),list(makeMap().values()))
 #plt.show()
 
 tanfunc(current, goal)
