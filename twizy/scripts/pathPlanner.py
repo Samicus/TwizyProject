@@ -29,6 +29,9 @@ def makeMap():  ## for now it will return a fixed map
         1.3: 1,
         1.4: 1,
         1.5: 1,
+        1.52: 1.2,
+        1.55: 2.4,
+        1.57: 3.0,  ## Higher density needed here!
         1.6: 3.5,
         1.7: 3.5,
         1.8: 3.5,
@@ -102,12 +105,12 @@ def makeMap():  ## for now it will return a fixed map
 
 
 def filter_collision(x_0, y_0, deriv):
-    circleRadius = 0.01   ### OBS! Check this value!!!
-    distanceList = []
+    circleRadius = 0.69  ### OBS! Check this value!!!
     parkingmap = makeMap()
-    carlength = 3                       ### OBS! Check this value!!!
+    carlength = 2.32  ### OBS! Check this value!!!
     halfCar = carlength / 2
     angle = np.arctan(deriv)
+    counter = 0
     if (deriv > 0):
         p1 = Coordinate(x_0 - halfCar * np.cos(angle), y_0 - halfCar * np.sin(angle))
         p2 = Coordinate(x_0 + halfCar * np.cos(angle), y_0 + halfCar * np.sin(angle))
@@ -116,53 +119,51 @@ def filter_collision(x_0, y_0, deriv):
         p2 = Coordinate(x_0 + halfCar * np.cos(angle), y_0 - halfCar * np.sin(angle))
 
     tang_linspace = np.linspace(p1.x, p2.x, 20)
-    tangent = deriv * (tang_linspace - x_0) + y_0
-   #plt.plot(tang_linspace, tangent)            #check collision instead?
+    # tangent = deriv * (tang_linspace - x_0) + y_0
+    # plt.plot(tang_linspace, tangent)            #check collision instead?
     for x in tang_linspace:
-        distanceList.clear()
-        for key in parkingmap:
-            counter = 0
-            tangent = deriv * (x- x_0) + y_0
-            dist = distance(x,tangent,key,parkingmap.get(key))
-            if dist < circleRadius:
-                return True
+        counter = counter + 1
+        if counter > 6 or counter < 16:
+            for key in parkingmap:
+                tangent = deriv * (x - x_0) + y_0
+                dist = distance(x, tangent, key, parkingmap.get(key))
+                if dist < circleRadius:
+                    return True
     return False
 
 
-
-
-
-
 def distance(x1, y1, x2, y2):
-    return np.sqrt((x2 - x1)**2 + (y2 - y1) **2)
+    return np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
-def f_arctan(a, b, c, x):
-    return a * np.arctan(c) + a * np.arctan(x/b - c)
+def f_arctan(a, b, c, x):  ## Byt till denna funktionen på metoderna under
+    return a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * (x - 3 * b - c))
 
 
 def f_arctan_d1(a, b, c, x):  # derivative of f_arctan
-    return a / (b * (1 + (np.power(c - x / b, 2))))
+    # return a / (b * (1 + (np.power(c - x / b, 2))))
+    return a / (b * (np.power(x - 3 * b - c, 2) / np.power(b, 2) + 1))
 
 
 def f_arctan_d2(a, b, c, x):  # second derivative of f_arctan
-    return (2 * a * (c - x / b)) / (np.power(b, 2) * (np.power(np.power(c - x / b, 2) + 1, 2)))
+    # return (2 * a * (c - x / b)) / (np.power(b, 2) * (np.power(np.power(c - x / b, 2) + 1, 2)))
+    return (2 * a * (-3 * b - c + x)) / (np.power(b, 3) * np.power(np.power(-3 * b - c + x, 2) / np.power(b, 2) + 1, 2))
 
 
 def path(current, goal):
     """first argument takes in the current coordinate of the car and the second is the
      coordinate of the goal position this method will return the optimal
      trajectory"""
-    CarLength = 3                                 ### OBS! Check this value!!!
     Depth = np.abs(goal.y - current.y)  # 2
     Length = np.abs(goal.x - current.x)  # 10
-    Period = 10                                 ### OBS! Check this value!!!
-    Deptharray = np.linspace(0, Depth, 10)
-    Periodarray = np.linspace(1, Period, 10)
-    Lengtharray = np.linspace(0, Length, 20)
-    Phasearray = np.linspace(0, 3, 20)
+    Period = 2
+    phase = 10
+    Deptharray = np.linspace(0, Depth, 30)
+    Periodarray = np.linspace(0, Period, 20)
+    Lengtharray = np.linspace(current.x, current.x + Length, 20)
+    Phasearray = np.linspace(0, phase, 20)
     radius = []
-
+    candidates = []
     for a in Deptharray:
         for b in Periodarray:
             for c in Phasearray:
@@ -171,28 +172,26 @@ def path(current, goal):
                     collision1 = False
                     counter = 0
                     function = f_arctan(a, b, c, Lengtharray)
-
                     if abs((f_arctan(a, b, c,
-                                     goal.x) - goal.y)) > 10:  # filter out every function of which distance to
+                                     goal.x) - goal.y)) > 0.3:  # filter out every function of which distance to
                         break  # to the goal position at goal.x is to big
 
-                    if f_arctan_d1(a, b, c, goal.x) > 1:  # filter out every function that ends with a slope
+                    if f_arctan_d1(a, b, c, goal.x) > 0.1:  # filter out every function that ends with a slope
                         break  # larger than 0.1 rad (to ensure that the car is parked horizontally)
 
-
                     for x in Lengtharray:  # filter out every function with a radius of curvature smaller
-                        if x != 0:          # than that of renault twizy
+                        if x != 0:  # than that of renault twizy
                             f_deriv = f_arctan_d1(a, b, c, x)  # first derivative
                             f_deriv2 = f_arctan_d2(a, b, c, x)  # second derivative
 
                             if f_deriv2 != 0:
-                                radius.insert(counter,np.absolute(np.power(1 + np.power(f_deriv, 2), 3 / 2) / f_deriv2))   # formula for radius of curvature
+                                radius.insert(counter, np.absolute(np.power(1 + np.power(f_deriv, 2),
+                                                                            3 / 2) / f_deriv2))  # formula for radius of curvature
                                 counter = counter + 1
 
-                    if min(radius) < 3.3:       # filter out every function with a radius of curvature smaller            ### OBS! Check this value
+                    if min(
+                            radius) < 2.3:  # filter out every function with a radius of curvature smaller            ### OBS! Check this value
                         break  # than that of renault twizy
-
-
 
                     for x in Lengtharray:
                         if x != 0:
@@ -206,11 +205,12 @@ def path(current, goal):
                         break
 
                     plt.plot(Lengtharray, function)
-                                  # TODO: Lägg till dessa i funktioner
+
+                    # TODO: Returnera a,b,c på bästa funktionen!
 
 
 current = Coordinate(0, 0)
-goal = Coordinate(5, 2.25)
+goal = Coordinate(6, 2.25)
 
 a = 2.5
 b = 1.4
