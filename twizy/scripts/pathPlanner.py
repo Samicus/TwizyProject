@@ -20,112 +20,36 @@ def Convert(lst):
     return res_dct
 
 
-def makeMap():  ## for now it will return a fixed map
-    """This method creates a dictionary by combining the GPS-coordinate and
-     the ultrasonic sensors"""
+def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist): #all coordinates come from the GPS, twizydist from rear ultrasonic sensor
+
+    offset_length = np.linspace(coordstart.x, coordbreak1.x-0.001, 20)
+    extradots =np.linspace(coordbreak1.x, coordbreak1.x + 0.1, 20)
+    parkingspot_length = np.linspace(coordbreak1.x+0.1, coordbreak2.x, 20)
+    end_length = np.linspace(coordbreak2.x, coordend.x,  20)
 
 
-    parkmap = {
-        0.0: distance,
-        0.1: distance,
-        0.2: distance,
-        0.3: distance,
-        0.4: distance,
-        0.5: distance,
-        0.6: distance,
-        0.7: distance,
-        0.8: distance,
-        0.9: distance,
-        1.0: distance,
-        1.1: distance,
-        1.2: distance,
-        1.3: distance,
-        1.4: distance,
-        1.5: distance,
-        1.51: 0.3 + distance,
-        1.52: 0.5 + distance,
-        1.53: 0.9 + distance,
-        1.54: 1.1 + distance,
-        1.55: 1.4 + distance,
-        1.56: 1.7 + distance,
-        1.57: 2.0 + distance,  ## Higher density needed here!
-        1.58: 2.25 + distance,
-        1.59: 2.4  + distance,
-        1.6: distance + 2.5,
-        1.7: distance + 2.5,
-        1.8: distance + 2.5,
-        1.9: distance + 2.5,
-        2.0: distance + 2.5,
-        2.1: distance + 2.5,
-        2.2: distance + 2.5,
-        2.3: distance + 2.5,
-        2.5: distance + 2.5,
-        2.6: distance + 2.5,
-        2.7: distance + 2.5,
-        2.8: distance + 2.5,
-        2.9: distance + 2.5,
-        3.0: distance + 2.5,
-        3.1: distance + 2.5,
-        3.2: distance + 2.5,
-        3.3: distance + 2.5,
-        3.4: distance + 2.5,
-        3.5: distance + 2.5,
-        3.6: distance + 2.5,
-        3.7: distance + 2.5,
-        3.8: distance + 2.5,
-        3.9: distance + 2.5,
-        4.0: distance + 2.5,
-        4.1: distance + 2.5,
-        4.2: distance + 2.5,
-        4.3: distance + 2.5,
-        4.4: distance + 2.5,
-        4.5: distance + 2.5,
-        4.6: distance + 2.5,
-        4.7: distance + 2.5,
-        4.8: distance + 2.5,
-        4.9: distance + 2.5,
-        5.0: distance + 2.5,
-        5.1: distance + 2.5,
-        5.2: distance + 2.5,
-        5.3: distance + 2.5,
-        5.4: distance + 2.5,
-        5.5: distance + 2.5,
-        5.6: distance + 2.5,
-        5.7: distance + 2.5,
-        5.8: distance + 2.5,
-        5.9: distance + 2.5,
-        6.0: distance + 2.5,
-        6.1: distance + 2.5,
-        6.2: distance + 2.5,
-        6.3: distance + 2.5,
-        6.4: distance + 2.5,
-        6.5: distance + 2.5,
-        6.6: distance + 2.5,
-        6.7: distance + 2.5,
-        6.8: distance + 2.5,
-        6.9: distance + 2.5,
-        7.0: distance + 2.5,
-        7.1: distance,
-        7.2: distance,
-        7.3: distance,
-        7.4: distance,
-        7.5: distance,
-        7.6: distance,
-        7.7: distance,
-        7.8: distance,
-        7.9: distance,
-        8.0: distance,
-        8.1: distance,
-        8.2: distance,
-        8.3: distance,
+    parkingspotdepth = 2.5
+    #  y = 25x + (distance . 25*offset)
+    parkmap = {}
 
-    }
+    for x in offset_length:
+        parkmap[x] = twizydist
+    for x in extradots:
+        parkmap[x] = 25*x + (distance - 25*offset)
+    for x in parkingspot_length:
+        parkmap[x] = parkingspotdepth + twizydist
+    for x in end_length:
+        parkmap[x] = twizydist
+
+
     return parkmap
+
+
 
 
 def filter_collision(x_0, y_0, deriv):
     circleRadius = 0.69  ### OBS! Check this value!!!
-    parkingmap = makeMap()
+    parkingmap = generateMap(coord_start,coord_p1,coord_p2,coord_end,distance)
     carlength = 2.32  ### OBS! Check this value!!!
     halfCar = carlength / 2
     angle = np.arctan(deriv)
@@ -138,8 +62,8 @@ def filter_collision(x_0, y_0, deriv):
         p2 = Coordinate(x_0 + halfCar * np.cos(angle), y_0 - halfCar * np.sin(angle))
 
     tang_linspace = np.linspace(p1.x, p2.x, 20)
-    #tangent = deriv * (tang_linspace - x_0) + y_0
-    #plt.plot(tang_linspace, tangent)            #check collision instead?
+    # tangent = deriv * (tang_linspace - x_0) + y_0
+    # plt.plot(tang_linspace, tangent)
     for x in tang_linspace:
         counter = counter + 1
         if counter > 6 or counter < 16:
@@ -166,7 +90,7 @@ def f_arctan_d1(a, b, c, x):  # derivative
 
 def f_arctan_d2(a, b, c, x):  # second derivative
     # return (2 * a * (c - x / b)) / (np.power(b, 2) * (np.power(np.power(c - x / b, 2) + 1 , 2)))
-    return (2 * a * (-3 * b - c + x)) / (np.power(b, 3) * np.power(np.power(-3 * b - c + x, 2) / np.power(b, 2) + 1 , 2))
+    return (2 * a * (-3 * b - c + x)) / (np.power(b, 3) * np.power(np.power(-3 * b - c + x, 2) / np.power(b, 2) + 1, 2))
 
 
 def path(current, goal):
@@ -177,7 +101,7 @@ def path(current, goal):
     length = np.abs(goal.x - current.x)  # 10
     period = 2
     phase = 100
-    deptharray = np.linspace(0.5, depth/2, 30)
+    deptharray = np.linspace(0.5, depth / 1.15, 30)
     periodarray = np.linspace(0, period, 20)
     lengtharray = np.linspace(current.x, current.x + length, 20)
     phasearray = np.linspace(0, phase, 20)
@@ -194,11 +118,10 @@ def path(current, goal):
                     #plt.plot(lengtharray,function)
                     if abs((f_arctan(a, b, c,
                                      goal.x) - goal.y)) > 0.2:  # filter out every function of which distance to
-                        break                                   # to the goal position at goal.x is to big
+                        break  # to the goal position at goal.x is to big
 
                     if f_arctan_d1(a, b, c, goal.x) > 0.2:  # filter out every function that ends with a slope
                         break  # larger than 0.1 rad (to ensure that the car is parked horizontally)
-
 
                     for x in lengtharray:  # filter out every function with a radius of curvature smaller
                         if x != 0:  # than that of renault twizy
@@ -209,11 +132,8 @@ def path(current, goal):
                                 radius.insert(counter, np.absolute(np.power(1 + np.power(f_deriv, 2),
                                                                             3 / 2) / f_deriv2))  # formula for radius of curvature
                                 counter = counter + 1
-                    if min(
-                            radius) < 1.3:  # filter out every function with a radius of curvature smaller            ### OBS! Check this value
+                    if min(radius) < 1.3:  # filter out every function with a radius of curvature smaller
                         break  # than that of renault twizy
-
-
 
                     for x in lengtharray:
                         if x != 0:
@@ -228,27 +148,31 @@ def path(current, goal):
 
                     plt.plot(lengtharray, function)
 
-                    #return  [a, b, c]
+                    return  [a, b, c]
 
                     # TODO: Returnera a,b,c på bästa funktionen!
                     # TODO: IF NO PATH IS CALCULATED, LOWER THE FIRST 2 CRITERIAS
                     # TODO: FIND BEST VALUES FOR PHASE AND DEPTH.ETC
                     # TODO: MAKE THE CODE COMPATIBLE WITH A DYNMAIC MAP
 
-offset = 2
+
+offset = 1
 parkingLength = 5.5
 distance = 1
 current = Coordinate(0, 0)
-goal = Coordinate(5, distance + 1.25)
+
+
+goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25 )
 lst = np.linspace(offset, parkingLength + offset)
-print(Convert(lst))
 
+coord_end= Coordinate(offset+parkingLength+3, 1)
+coord_p2= Coordinate(offset+parkingLength, 1)
+coord_p1 = Coordinate(offset, 1)
+coord_start = Coordinate(0, 1)
 
-karta = makeMap()
+karta = generateMap(coord_start, coord_p1, coord_p2, coord_end, distance)
 plt.plot(list(karta.keys()), list(karta.values()), 'black')
 # plt.show()
 
 path(current, goal)
 plt.show()
-
-
