@@ -5,7 +5,7 @@
 ros::NodeHandle nh;
 std_msgs::Float64MultiArray Distance;
 
-ros::Publisher chatter("chatter",&Distance);
+ros::Publisher chatter("dist_sensors",&Distance);
 
 // defines pins numbers
 const int trigPin1 = 8;

@@ -15,6 +15,7 @@ class Coordinate:
 # Python3 program to Convert a
 # list to dictionary
 
+
 def Convert(lst):
     res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
     return res_dct
@@ -147,8 +148,8 @@ def path(current, goal):
                         break
 
                     plt.plot(lengtharray, function)
-
-                    return  [a, b, c]
+                    print([a, b , c])
+                    return [a, b, c]
 
                     # TODO: Returnera a,b,c på bästa funktionen!
                     # TODO: IF NO PATH IS CALCULATED, LOWER THE FIRST 2 CRITERIAS
@@ -156,9 +157,9 @@ def path(current, goal):
                     # TODO: MAKE THE CODE COMPATIBLE WITH A DYNMAIC MAP
 
 
-offset = 1
-parkingLength = 5.5
-distance = 1
+offset = 1.5
+parkingLength = 6.5
+distance = 1.3
 current = Coordinate(0, 0)
 
 
