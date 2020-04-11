@@ -30,16 +30,16 @@ double calc_angle(float x1, float y1)
      else if (x1 < 0 && y1 > 0)
          a =  -M_PI/2 - atan(y1/x1);
      else if ( x1 > 0 && y1 > 0)
-         a = M_PI/2 - atan(y1/x1); 
+         a = M_PI/2 - atan(y1/x1);
      else if (x1 > 0 && y1 < 0)
          a = atan(y1/x1) + M_PI;
      else
-         a = -M_PI/2 + atan(y1/x1); 
-       
-    a = a*180/M_PI; 
-	
+         a = -M_PI/2 + atan(y1/x1);
+
+    a = a*180/M_PI;
+
     std::cout << "a_before: " << a << std::endl;
-    
+
 	if (a > 40)
 		a = 40;
 	else if(a < -40)
@@ -57,8 +57,8 @@ double calc_distance(double x1, double y1)
 	return d;
 }
 double calc_speed()//in km/h
-{   
-    float frac = calc_distance(goal[0],goal[1]) / total_dist; 
+{
+    float frac = calc_distance(goal[0],goal[1]) / total_dist;
 	float speed = base_speed;
 	if(frac < 0.1)
 	{
@@ -103,13 +103,13 @@ void callback_pos(const std_msgs::Float32MultiArray::ConstPtr& msg)
     if(msg->data[0] == 0 && msg->data[1] == 0)
     {
         send(0,0);
-        std::cout << "Stopping" << std::endl;  
+        std::cout << "Stopping" << std::endl;
     }
     else
     {
 	    send(	calc_speed(),
 	        (int)round(calc_angle(		msg->data[0], msg->data[1]	)));
-	 
+
     }
 }
 void callback_goal(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -118,9 +118,9 @@ void callback_goal(const std_msgs::Float32MultiArray::ConstPtr& msg)
     goal[1] = msg->data[1];
     if(once)
     {
-        total_dist = calc_distance(goal[0],goal[1]);        
+        total_dist = calc_distance(goal[0],goal[1]);
     }
-    
+
 }
 /*void callback_path(const std_msgs::String::ConstPtr& msg)
 {
@@ -139,9 +139,8 @@ int main(int argc, char **argv){
 	//ros::Subscriber sub_path = n.subscribe("aim_coords",3,callback_path);
 	ros::Subscriber sub_pos = n.subscribe("aim_goal",2,callback_pos);
 	ros::Subscriber sub_goal = n.subscribe("relative_goal",1,callback_goal);
-	
 
-	
+
+
 	ros::spin();
 }
-

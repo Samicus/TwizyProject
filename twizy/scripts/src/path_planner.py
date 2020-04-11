@@ -8,22 +8,18 @@ class Coordinate:
         self.x = x
         self.y = y
 
-        # mapa avstånd på parkering, avstånd till bilen i slutet och göra en map
-        # utifrån det. ---- Ta in Parkeringslängd, avstånd till bilen bredvid,(och längden ifrån parkeringen?)
-
 
 def Convert(lst):
     res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
     return res_dct
 
 
-def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist): #all coordinates come from the GPS, twizydist from rear ultrasonic sensor
-
-    offset_length = np.linspace(coordstart.x, coordbreak1.x-0.001, 20)
-    extradots =np.linspace(coordbreak1.x, coordbreak1.x + 0.1, 20)
-    parkingspot_length = np.linspace(coordbreak1.x+0.1, coordbreak2.x, 20)
-    end_length = np.linspace(coordbreak2.x, coordend.x,  20)
-
+# all coordinates come from the GPS, twizydist from rear ultrasonic sensor
+def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist):
+    offset_length = np.linspace(coordstart.x, coordbreak1.x - 0.001, 20)
+    extradots = np.linspace(coordbreak1.x, coordbreak1.x + 0.1, 20)
+    parkingspot_length = np.linspace(coordbreak1.x + 0.1, coordbreak2.x, 20)
+    end_length = np.linspace(coordbreak2.x, coordend.x, 20)
 
     parkingspotdepth = 2.5
     #  y = 25x + (distance . 25*offset)
@@ -32,33 +28,28 @@ def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist): #all
     for x in offset_length:
         parkmap[x] = twizydist
     for x in extradots:
-        parkmap[x] = 25*x + (distance - 25*offset)
+        parkmap[x] = 25 * x + (distance - 25 * offset)
     for x in parkingspot_length:
         parkmap[x] = parkingspotdepth + twizydist
     for x in end_length:
         parkmap[x] = twizydist
 
-
     return parkmap
 
 
-
-
 def filter_collision(x_0, y_0, deriv):
-    circleRadius = 0.69  ### OBS! Check this value!!!
-    parkingmap = generateMap(coord_start,coord_p1,coord_p2,coord_end,distance)
-    carlength = 2.32  ### OBS! Check this value!!!
-    halfCar = carlength / 2
+    circleRadius = 0.69
+    parkingmap = generateMap(coord_start, coord_p1, coord_p2, coord_end, distance)
+    carlength = 2.32
     angle = np.arctan(deriv)
     counter = 0
 
     p1 = Coordinate(x_0 - carlength * np.cos(angle), y_0 - carlength * np.sin(angle))
-    p2 = Coordinate(x_0,y_0)
-
+    p2 = Coordinate(x_0, y_0)
 
     tang_linspace = np.linspace(p1.x, p2.x, 20)
-    #tangent = deriv * (tang_linspace - x_0) + y_0
-    #plt.plot(tang_linspace, tangent)
+    # tangent = deriv * (tang_linspace - x_0) + y_0
+    # plt.plot(tang_linspace, tangent)
     for x in tang_linspace:
         counter = counter + 1
         if counter > 6 or counter < 16:
@@ -79,12 +70,10 @@ def f_arctan(a, b, c, x):
 
 
 def f_arctan_d1(a, b, c, x):  # derivative
-    # return a / (b * (1 + (np.power(c - x / b, 2))))
     return a / (b * (np.power(x - 3 * b - c, 2) / np.power(b, 2) + 1))
 
 
 def f_arctan_d2(a, b, c, x):  # second derivative
-    # return (2 * a * (c - x / b)) / (np.power(b, 2) * (np.power(np.power(c - x / b, 2) + 1 , 2)))
     return (2 * a * (-3 * b - c + x)) / (np.power(b, 3) * np.power(np.power(-3 * b - c + x, 2) / np.power(b, 2) + 1, 2))
 
 
@@ -110,7 +99,7 @@ def path(current, goal):
                     collision1 = False
                     counter = 0
                     function = f_arctan(a, b, c, lengtharray)
-                    #plt.plot(lengtharray,function)
+                    # plt.plot(lengtharray,function)
                     if abs((f_arctan(a, b, c,
                                      goal.x) - goal.y)) > 0.2:  # filter out every function of which distance to
                         break  # to the goal position at goal.x is to big
@@ -142,7 +131,7 @@ def path(current, goal):
                         break
 
                     plt.plot(lengtharray, function)
-                    print([a, b , c])
+                    print([a, b, c])
                     return [a, b, c]
 
                     # TODO: Returnera a,b,c på bästa funktionen!
@@ -156,12 +145,11 @@ parkingLength = 6.5
 distance = 1.3
 current = Coordinate(0, 0)
 
-
-goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25 )
+goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25)
 lst = np.linspace(offset, parkingLength + offset)
 
-coord_end= Coordinate(offset+parkingLength+3, 1)
-coord_p2= Coordinate(offset+parkingLength, 1)
+coord_end = Coordinate(offset + parkingLength + 3, 1)
+coord_p2 = Coordinate(offset + parkingLength, 1)
 coord_p1 = Coordinate(offset, 1)
 coord_start = Coordinate(0, 1)
 
