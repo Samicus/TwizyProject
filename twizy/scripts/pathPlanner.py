@@ -12,10 +12,6 @@ class Coordinate:
         # utifrån det. ---- Ta in Parkeringslängd, avstånd till bilen bredvid,(och längden ifrån parkeringen?)
 
 
-# Python3 program to Convert a
-# list to dictionary
-
-
 def Convert(lst):
     res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
     return res_dct
@@ -32,7 +28,7 @@ def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist): #all
     parkingspotdepth = 2.5
     #  y = 25x + (distance . 25*offset)
     parkmap = {}
-
+    offsett = 2;
     for x in offset_length:
         parkmap[x] = twizydist
     for x in extradots:
@@ -55,16 +51,14 @@ def filter_collision(x_0, y_0, deriv):
     halfCar = carlength / 2
     angle = np.arctan(deriv)
     counter = 0
-    if (deriv > 0):
-        p1 = Coordinate(x_0 - halfCar * np.cos(angle), y_0 - halfCar * np.sin(angle))
-        p2 = Coordinate(x_0 + halfCar * np.cos(angle), y_0 + halfCar * np.sin(angle))
-    else:
-        p1 = Coordinate(x_0 - halfCar * np.cos(angle), y_0 + halfCar * np.sin(angle))
-        p2 = Coordinate(x_0 + halfCar * np.cos(angle), y_0 - halfCar * np.sin(angle))
+
+    p1 = Coordinate(x_0 - carlength * np.cos(angle), y_0 - carlength * np.sin(angle))
+    p2 = Coordinate(x_0,y_0)
+
 
     tang_linspace = np.linspace(p1.x, p2.x, 20)
-    # tangent = deriv * (tang_linspace - x_0) + y_0
-    # plt.plot(tang_linspace, tangent)
+    #tangent = deriv * (tang_linspace - x_0) + y_0
+    #plt.plot(tang_linspace, tangent)
     for x in tang_linspace:
         counter = counter + 1
         if counter > 6 or counter < 16:
@@ -101,7 +95,7 @@ def path(current, goal):
     depth = np.abs(goal.y - current.y)  # 2
     length = np.abs(goal.x - current.x)  # 10
     period = 2
-    phase = 100
+    phase = 3
     deptharray = np.linspace(0.5, depth / 1.15, 30)
     periodarray = np.linspace(0, period, 20)
     lengtharray = np.linspace(current.x, current.x + length, 20)
