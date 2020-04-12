@@ -8,38 +8,41 @@ class Coordinate:
         self.x = x
         self.y = y
 
+class Map:
+    def __init__(self,coordstart, coordbreak1, coordbreak2, coordend, twizydist, offset):
+        self.coordstart = coordstart
+        self.coordbreak1 = coordbreak1
+        self.coordbreak2 = coordbreak2
+        self.coordend = coordend
+        self.twizydist = twizydist
+        self.offset = offset
 
-def Convert(lst):
-    res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
-    return res_dct
+    # all coordinates come from the GPS, twizydist from rear ultrasonic sensor
+    def generateMap(self):
+        offset_length = np.linspace(self.coordstart, self.coordbreak1 - 0.001, 20)
+        extradots = np.linspace(self.coordbreak1, self.coordbreak1 + 0.1, 20)
+        parkingspot_length = np.linspace(self.coordbreak1 + 0.1, self.coordbreak2, 20)
+        end_length = np.linspace(self.coordbreak2, self.coordend, 20)
+
+        parkingspotdepth = 2.5
+        #  y = 25x + (distance . 25*offset)
+        parkmap = {}
+
+        for x in offset_length:
+            parkmap[x] = self.twizydist
+        for x in extradots:
+            parkmap[x] = 25 * x + (self.twizydist - 25 * self.offset)
+        for x in parkingspot_length:
+            parkmap[x] = parkingspotdepth + self.twizydist
+        for x in end_length:
+            parkmap[x] = self.twizydist
+
+        return parkmap
 
 
-# all coordinates come from the GPS, twizydist from rear ultrasonic sensor
-def generateMap(coordstart, coordbreak1, coordbreak2, coordend, twizydist):
-    offset_length = np.linspace(coordstart.x, coordbreak1.x - 0.001, 20)
-    extradots = np.linspace(coordbreak1.x, coordbreak1.x + 0.1, 20)
-    parkingspot_length = np.linspace(coordbreak1.x + 0.1, coordbreak2.x, 20)
-    end_length = np.linspace(coordbreak2.x, coordend.x, 20)
-
-    parkingspotdepth = 2.5
-    #  y = 25x + (distance . 25*offset)
-    parkmap = {}
-    offsett = 2;
-    for x in offset_length:
-        parkmap[x] = twizydist
-    for x in extradots:
-        parkmap[x] = 25 * x + (distance - 25 * offset)
-    for x in parkingspot_length:
-        parkmap[x] = parkingspotdepth + twizydist
-    for x in end_length:
-        parkmap[x] = twizydist
-
-    return parkmap
-
-
-def filter_collision(x_0, y_0, deriv):
+def filter_collision(x_0, y_0, deriv, parkingmap):
     circleRadius = 0.69
-    parkingmap = generateMap(coord_start, coord_p1, coord_p2, coord_end, distance)
+    #parkingmap = generateMap(coord_start, coord_p1, coord_p2, coord_end, distance)
     carlength = 2.32
     angle = np.arctan(deriv)
     counter = 0
@@ -77,7 +80,7 @@ def f_arctan_d2(a, b, c, x):  # second derivative
     return (2 * a * (-3 * b - c + x)) / (np.power(b, 3) * np.power(np.power(-3 * b - c + x, 2) / np.power(b, 2) + 1, 2))
 
 
-def path(current, goal):
+def path(current, goal, parkingmap):
     """first argument takes in the current coordinate of the car and the second is the
      coordinate of the goal position this method will return the optimal
      trajectory"""
@@ -122,7 +125,7 @@ def path(current, goal):
                     for x in lengtharray:
                         if x != 0:
                             f_deriv = f_arctan_d1(a, b, c, x)  # first derivative
-                            collision = filter_collision(x, f_arctan(a, b, c, x), f_deriv)
+                            collision = filter_collision(x, f_arctan(a, b, c, x), f_deriv, parkingmap)
 
                             if collision == True:
                                 collision1 = True
@@ -139,23 +142,26 @@ def path(current, goal):
                     # TODO: FIND BEST VALUES FOR PHASE AND DEPTH.ETC
                     # TODO: MAKE THE CODE COMPATIBLE WITH A DYNMAIC MAP
 
+def main():
+    offset = 1.5
+    parkingLength = 6.5
+    distance = 1.3
+    current = Coordinate(0, 0)
 
-offset = 1.5
-parkingLength = 6.5
-distance = 1.3
-current = Coordinate(0, 0)
+    goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25)
 
-goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25)
-lst = np.linspace(offset, parkingLength + offset)
 
-coord_end = Coordinate(offset + parkingLength + 3, 1)
-coord_p2 = Coordinate(offset + parkingLength, 1)
-coord_p1 = Coordinate(offset, 1)
-coord_start = Coordinate(0, 1)
+    start = 0
+    p1 = offset
+    p2 = offset + parkingLength
+    end = offset + parkingLength + 3
 
-karta = generateMap(coord_start, coord_p1, coord_p2, coord_end, distance)
-plt.plot(list(karta.keys()), list(karta.values()), 'black')
-# plt.show()
+    karta = Map(start, p1, p2, end, distance, offset).generateMap()
+    plt.plot(list(karta.keys()), list(karta.values()), 'black')
+    # plt.show()
 
-path(current, goal)
-plt.show()
+    path(current, goal,karta)
+    plt.show()
+
+if __name__ == '__main__':
+    main()

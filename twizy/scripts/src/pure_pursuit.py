@@ -87,11 +87,10 @@ class TargetCourse:
 
         return gen
 
-    def set_path(self, a, b, c):
-        self.cx = np.arange(0, 10, 0.1)
-        self.cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * (x - 3 * b - c)) for x in self.cx]
+    def set_path(self, a, b, c, gps_x, gps_y):
 
-
+        self.cx = np.arange(gps_x, gps_x + 10, 0.1)
+        self.cy = gps_y + [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * ((x+gps_x) - 3 * b - c)) for x in self.cx]
 
     def search_target_index(self, state):
 
