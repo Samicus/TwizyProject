@@ -150,7 +150,6 @@ def pure_pursuit_steer_control(state, trajectory, pind):
     alpha = math.atan2(ty - state.rear_y, tx - state.rear_x) - state.yaw
 
     delta = math.atan2(2.0 * WB * math.sin(alpha) / Lf, 1.0)
-    print(delta)
     return delta, ind
 
 
