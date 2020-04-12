@@ -8,10 +8,11 @@ import numpy as np
 import math
 
 
-class wrapper:
+class Wrapper:
 
     def __init__(self):
         self.counter = 0
+        self.path_is_ready = False
 
     def shutdown_hook(self):
         print('Goal reached!')
@@ -28,10 +29,10 @@ class wrapper:
         plt.pause(0.001)
 
     def GPS_callback(self, msg):
-        if path.is_path_generated():
+        if self.path_is_ready:
             self.GPS = msg.data
 
-            target_speed = -2 / 3.6  # [m/s]
+            target_speed = -1 / 3.6  # [m/s]
             time = 0.0
 
             # initial state
@@ -49,7 +50,7 @@ class wrapper:
                 di, target_ind = pure_pursuit.pure_pursuit_steer_control(
                     state, path, target_ind)
                 state.update_from_gps(self.GPS, ai)
-
+                di = di*180/math.pi         # convert to degrees
                 if di < -40:
                     angle = -40
                 elif di > 40:
@@ -73,7 +74,7 @@ class wrapper:
             c = 0  # msg.data[2]
             path.set_path(a, b, c, self.GPS[0], self.GPS[1])
             self.counter += 1
-
+            self.path_is_ready = True
 
 if __name__ == '__main__':
 
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     path = pure_pursuit.TargetCourse()
 
     while not rospy.is_shutdown():
-        rospy.Subscriber('GPS_pos', Float32MultiArray, wrapper.GPS_callback)
-        rospy.Subscriber('path_planner', Float32MultiArray, wrapper.path_callback)
+        rospy.Subscriber('GPS_pos', Float32MultiArray, Wrapper.GPS_callback)
+        rospy.Subscriber('path_planner', Float32MultiArray, Wrapper.path_callback)
 
         rate.sleep()

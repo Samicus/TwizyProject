@@ -7,10 +7,10 @@ matplotlib.use('TkAgg')
 
 # Parameters
 k = 0.1    # look forward gain
-Lfc = 0.3  # [m] look-ahead distance
+Lfc = 0.20  # [m] look-ahead distance
 Kp = 2     # speed proportional gain
 dt = 0.1   # [s] time tick
-WB = 1.63  # [m] wheel base of vehicle
+WB = 1.686  # [m] wheel base of vehicle
 
 show_animation = True
 
@@ -35,6 +35,10 @@ class State:
 
 
     def update(self, a, delta):
+        if delta > 0.7:
+            delta = 0.7
+        if delta < -0.7:
+            delta = -0.7
         self.x += self.v * math.cos(self.yaw) * dt
         self.y += self.v * math.sin(self.yaw) * dt
         self.yaw += self.v / WB * math.tan(delta) * dt
@@ -90,7 +94,10 @@ class TargetCourse:
     def set_path(self, a, b, c, gps_x, gps_y):
 
         self.cx = np.arange(gps_x, gps_x + 10, 0.1)
-        self.cy = gps_y + [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * ((x+gps_x) - 3 * b - c)) for x in self.cx]
+        self.cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * ((x-gps_x) - 3 * b - c)) for x in self.cx]
+        self.cy = [y + gps_y for y in self.cy]
+        return self.cx, self.cy
+
 
     def search_target_index(self, state):
 
@@ -143,11 +150,11 @@ def pure_pursuit_steer_control(state, trajectory, pind):
     alpha = math.atan2(ty - state.rear_y, tx - state.rear_x) - state.yaw
 
     delta = math.atan2(2.0 * WB * math.sin(alpha) / Lf, 1.0)
-
+    print(delta)
     return delta, ind
 
 
-def plot_arrow(x, y, yaw, length=1.0, width=0.5, fc="r", ec="k"):
+def plot_arrow(x, y, yaw, length=1.0, width=0.5, fc="black", ec="k"):
     """
     Plot arrow
     """
@@ -166,15 +173,16 @@ def main():
     b = 0.6765
     c = 0
     #  target course
+    path = TargetCourse()
     cx = np.arange(0, 10, 0.1)
-    cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * (x - 3 * b - c)) for x in cx]
-
-    target_speed = -2 / 3.6  # [m/s]
+    #cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * (x - 3 * b - c)) for x in cx]
+    cx , cy = path.set_path(a, b, c, -6, -2)
+    target_speed = -1.5 / 3.6  # [m/s]
 
     T = 100.0  # max simulation time
 
     # initial state
-    state = State(x=-0.0, y=0.0, yaw=3.14, v=0.0)
+    state = State(x=-6, y=-2, yaw=3.14, v=0.0)
 
     lastIndex = len(cx) - 1
     time = 0.0

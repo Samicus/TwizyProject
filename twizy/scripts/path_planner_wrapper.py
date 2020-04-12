@@ -4,14 +4,9 @@ from twizy.msg import path_generator
 from twizy.scripts.src import path_planner
 import rospy
 from std_msgs.msg import Float32MultiArray
-from matplotlib import pyplot as plt
-import numpy as np
-import math
 
-class wrapper:
-    def __init__(self):
-        pass
 
+class Wrapper:
 
     def shutdown_hook(self):
         print('Goal reached!')
@@ -53,6 +48,6 @@ if __name__ == '__main__':
     rate = rospy.Rate(1000)  # Adjust rate?
 
     while not rospy.is_shutdown():
-        rospy.Subscriber('mapping', Float32MultiArray, wrapper.mapper_callback)
+        rospy.Subscriber('mapping', Float32MultiArray, Wrapper.mapper_callback)
 
         rate.sleep()
