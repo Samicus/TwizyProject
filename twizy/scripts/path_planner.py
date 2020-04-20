@@ -119,8 +119,8 @@ def path(current, goal, parkingmap):
                                 radius.insert(counter, np.absolute(np.power(1 + np.power(f_deriv, 2),
                                                                             3 / 2) / f_deriv2))  # formula for radius of curvature
                                 counter = counter + 1
-                    if min(radius) < 1.3:  # filter out every function with a radius of curvature smaller
-                        break  # than that of renault twizy
+                    #if min(radius) < 1.3:  # filter out every function with a radius of curvature smaller		
+                    #    break  # than that of renault twizy
 
                     for x in lengtharray:
                         if x != 0:
@@ -135,12 +135,9 @@ def path(current, goal, parkingmap):
 
                     plt.plot(lengtharray, function)
                     print([a, b, c])
-                    return [a, b, c]
+                    return a, b, c
 
-                    # TODO: Returnera a,b,c på bästa funktionen!
-                    # TODO: IF NO PATH IS CALCULATED, LOWER THE FIRST 2 CRITERIAS
-                    # TODO: FIND BEST VALUES FOR PHASE AND DEPTH.ETC
-                    # TODO: MAKE THE CODE COMPATIBLE WITH A DYNMAIC MAP
+                     
 
 def main():
     offset = 1.5

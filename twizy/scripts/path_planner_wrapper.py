@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
-from twizy.msg import path_generator
-from twizy.scripts.src import path_planner
+import path_planner
 import rospy
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float64MultiArray
 
 
 class Wrapper:
@@ -28,26 +26,28 @@ class Wrapper:
             parking_map = path_planner.Map(start, p1, p2, end, distance, offset).generateMap()
 
             a, b, c = path_planner.path(current, goal, parking_map)
-            msg_to_publish.a = a
-            msg_to_publish.b = b
-            msg_to_publish.c = c
-            msg_to_publish.done = 1
+            msg_to_publish.data[0] = a
+            msg_to_publish.data[1] = b
+            msg_to_publish.data[2] = c
+            msg_to_publish.done[3] = 1
         else:
             print('Mapping not yet done!')
-            msg_to_publish.a = 0
-            msg_to_publish.b = 0
-            msg_to_publish.c = 0
-            msg_to_publish.done = 0
+            msg_to_publish.data[0] = 0
+            msg_to_publish.data[1] = 0
+            msg_to_publish.data[2] = 0
+            msg_to_publish.data[3] = 0
 
 
 if __name__ == '__main__':
 
     rospy.init_node('PathPlanner')
-    pub = rospy.Publisher('path_planner', Float32MultiArray, queue_size=5)
-    msg_to_publish = path_generator
-    rate = rospy.Rate(1000)  # Adjust rate?
+    pub = rospy.Publisher('path_planner', Float64MultiArray, queue_size=5)
+    msg_to_publish = Float64MultiArray()
+    rate = rospy.Rate(1)  # Adjust rate?
 
     while not rospy.is_shutdown():
-        rospy.Subscriber('mapping', Float32MultiArray, Wrapper.mapper_callback)
-
+        #rospy.Subscriber('mapping', Float32MultiArray, Wrapper.mapper_callback)
+        msg_to_publish.data = [0.8960, 0.6765,0.0, 1.0, 1.5, 5.5]
+        print(msg_to_publish.data[0], msg_to_publish.data[1], msg_to_publish.data[2], msg_to_publish.data[3], msg_to_publish.data[4], msg_to_publish.data[5])
+        pub.publish(msg_to_publish)
         rate.sleep()

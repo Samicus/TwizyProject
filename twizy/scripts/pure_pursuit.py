@@ -17,7 +17,7 @@ show_animation = True
 
 class State:
 
-    def __init__(self, x, y, yaw, v):
+    def __init__(self, x=0, y=0, yaw=0, v=0):
         self.x = x
         self.y = y
         self.yaw = yaw
@@ -25,11 +25,11 @@ class State:
         self.rear_x = self.x - ((WB / 2) * math.cos(self.yaw))
         self.rear_y = self.y - ((WB / 2) * math.sin(self.yaw))
 
-    def update_from_gps(self, gps_data, a):
+    def update_from_gps(self, gps_data, v):
         self.x = gps_data[0]
         self.y = gps_data[1]
         self.yaw = gps_data[2]
-        self.v = a * dt
+        self.v = v
         self.rear_x = self.x - ((WB / 2) * math.cos(self.yaw))
         self.rear_y = self.y - ((WB / 2) * math.sin(self.yaw))
 
@@ -91,11 +91,13 @@ class TargetCourse:
 
         return gen
 
-    def set_path(self, a, b, c, gps_x, gps_y):
+    def set_path(self, a, b, c, gps_x, gps_y, yaw):
+        rear_x = gps_x - ((WB / 2) * math.cos(yaw))
+        rear_y = gps_y - ((WB / 2) * math.sin(yaw))
 
-        self.cx = np.arange(gps_x, gps_x + 10, 0.1)
-        self.cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * ((x-gps_x) - 3 * b - c)) for x in self.cx]
-        self.cy = [y + gps_y for y in self.cy]
+        self.cx = np.arange(rear_x, rear_x + 20 - 1.25, 0.1)
+        self.cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * ((x-rear_x) - 3 * b - c)) for x in self.cx]
+        self.cy = [y + rear_y for y in self.cy]
         return self.cx, self.cy
 
 
@@ -174,8 +176,10 @@ def main():
     #  target course
     path = TargetCourse()
     cx = np.arange(0, 10, 0.1)
+    offset = 1
+    parking_length = 5.5
     #cy = [a * np.arctan(c / b + 3) + a * np.arctan((1 / b) * (x - 3 * b - c)) for x in cx]
-    cx , cy = path.set_path(a, b, c, -6, -2)
+    cx , cy = path.set_path(a, b, c, -6, -2, 3.14)
     target_speed = -1.5 / 3.6  # [m/s]
 
     T = 100.0  # max simulation time
