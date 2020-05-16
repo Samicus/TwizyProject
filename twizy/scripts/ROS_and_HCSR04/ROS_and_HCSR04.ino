@@ -5,7 +5,10 @@
 ros::NodeHandle nh;
 std_msgs::Float64MultiArray Distance;
 
-ros::Publisher chatter("dist_sensors",&Distance);
+ros::Publisher ultrasonic("ultrasonic",&Distance);
+
+// Observe the location of the file. When running, the file in rosserial is used
+// Also, new files need to be uploaded to the actual arduino board
 
 // defines pins numbers
 const int trigPin1 = 8;
@@ -23,7 +26,7 @@ float distanceFrontWheel, distanceRearWheel, distanceReverse;
 
 void setup() {
   nh.initNode();
-  nh.advertise(chatter);
+  nh.advertise(ultrasonic);
   
   
   pinMode(trigPin1, OUTPUT); // Sets the trigPin as an Output
@@ -62,19 +65,22 @@ float calculateDistance(const int trigPin, const int echoPin, float distance){
 void loop() {
   // Clears the trigPin
   float distance1 = calculateDistance(trigPin1, echoPin1, distanceFrontWheel);
-  delay(300);
+  if (float distance1 > 450) {float distance1 = 450;}
+  delay(50);
   float distance2 =  calculateDistance(trigPin2, echoPin2, distanceRearWheel);
-  delay(300);
+  if (float distance2 > 450) {float distance2 = 450;}
+  delay(50);
   float distance3 = calculateDistance(trigPin3, echoPin3, distanceReverse);
+  if (float distance3 > 450) {float distance3 = 450;}
 
   float distanceArray [3] = {distance1, distance2, distance3}; 
   
   Distance.data = distanceArray;
   Distance.data_length = 3;
-  chatter.publish(&Distance);
+  ultrasonic.publish(&Distance);
   nh.spinOnce();
   // Prints the distance on the Serial Monitor
   //Serial.print("Distance: ");
   //Serial.println(distance);
-  delay(300);
+  delay(50);
 }

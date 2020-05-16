@@ -8,6 +8,7 @@ class CANComunication
 	char angle_1;
 	char angle_2;
 	char throttle;
+	char direction;
 	canHandle hnd;
 	canStatus stat;
 	public:

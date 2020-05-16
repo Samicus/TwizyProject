@@ -1,3 +1,5 @@
+// This program sends out the speed and angle messages to the CAN-bus.
+// TODO: Add filters with warnings for values lower or greater than what the car can handle
 
 
 #include <iostream>
@@ -7,15 +9,14 @@
 #include "CANComunication.h"
 #include <math.h>
 
-
-
 int CANComunication::StartCan()
 {
 	std::cout << "startcan" << std::endl;
 	canInitializeLibrary();
-	
+
 	int CHANNEL_NUMBER = 0;
 	hnd = canOpenChannel(CHANNEL_NUMBER, canOPEN_ACCEPT_VIRTUAL);
+
 	if (hnd < 0)
 	{
 		printf("canOpenCHannel failed, status=%d\n", hnd);
@@ -41,7 +42,7 @@ int CANComunication::SendMessage()
 	
 	// calculate messsage 
 		// steering 
-	angle_1 = round( 6.375 * abs(steer) );
+	angle_1 = round( 6.375 * abs(steer));
 	angle_2;
 	if (steer < 0)
 		angle_2 = 0;
@@ -50,12 +51,18 @@ int CANComunication::SendMessage()
 
 	char msg_steer[8] = { angle_1,angle_2,0,0,0,0,0,0 };
 	// gas
+	throttle = round((255 / 5) * abs(speed));
 
-	throttle = round((255 / 5) * speed);
-	char msg_speed[8] = { throttle,0,0,0,0,0,0,0 };
+	char dir = 0;
+
+	if(speed < 0)
+		dir = -1;
+	else
+		dir = 0;
+
+	char msg_speed[8] = { throttle,dir,0,0,0,0,0,0 };
 
 	// print steer and speed
-
 	std::cout << "Speed is ->  " << speed << "  Stering anlge is  " << steer << std::endl;
 
 	// write to canbus

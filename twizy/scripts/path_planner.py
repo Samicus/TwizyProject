@@ -98,7 +98,7 @@ def path(current, goal, parkingmap):
         for b in periodarray:
             for c in phasearray:
                 if a != 0 and b != 0:
-                    radius.clear()
+                    del radius[:]
                     collision1 = False
                     counter = 0
                     function = f_arctan(a, b, c, lengtharray)
@@ -141,8 +141,8 @@ def path(current, goal, parkingmap):
 
 def main():
     offset = 1.5
-    parkingLength = 6.5
-    distance = 1.3
+    parkingLength = 7
+    distance = 1
     current = Coordinate(0, 0)
 
     goal = Coordinate(offset + parkingLength - 1.25, distance + 1.25)
